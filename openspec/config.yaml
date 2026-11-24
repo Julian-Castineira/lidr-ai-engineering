@@ -1,0 +1,40 @@
+schema: spec-driven
+
+context: |
+  Producto y objetivo: repositorio público de entregas del Máster AI Engineering de LIDR.
+  Es una única aplicación que evoluciona sesión a sesión: cada sesión construye sobre la
+  anterior y puede añadir funcionalidades o refactorizar el código existente. main contiene
+  siempre la versión acumulada; el profesor evalúa cada sesión por separado.
+  Arquitectura y estructura: una sola estructura evolutiva de la aplicación (se fijará con
+  el stack de la primera sesión); memoria de cada entrega en docs/sesiones/sesion-NN.md;
+  ejercicios independientes de la aplicación en ejercicios/sesion-NN/.
+  Stack y versiones: pendiente de la primera sesión con código.
+  Modelos de IA y proveedores: pendiente de la primera sesión con código.
+  Testing: pendiente de la primera sesión con código.
+  Convenciones: artefactos de OpenSpec y mensajes de commit en español; código e
+  identificadores en inglés. Rama sesion-NN por sesión, PR a main, tag entrega-sesion-NN
+  al entregar y merge commit sin squash ni rebase; ramas chore/<descripción> para lo demás.
+  Nunca se trabaja directamente sobre main.
+  Restricciones: repo público; sin claves, .env, credenciales, datos reales ni nombres de
+  clientes. Variables de entorno documentadas en .env.example sin valores reales.
+
+rules:
+  proposal:
+    - "Explica el problema, para quién y el objetivo de negocio antes de la solución."
+    - "Delimita de forma explícita qué entra y qué queda fuera del alcance."
+    - "Enumera ficheros y capas afectadas, cambios en el modelo de datos y migraciones, y contratos de endpoints."
+    - "Si el cambio afecta a datos, APIs públicas o producción, incluye riesgos y plan de rollback."
+    - "Si el cambio toca un LLM, indica modelo, coste y latencia esperados y cómo se evaluará la calidad."
+  specs:
+    - "Escribe requisitos verificables y sin ambigüedades."
+    - "Usa escenarios Given/When/Then con happy path y sad paths (entradas inválidas, errores, fallos del proveedor de IA)."
+    - "Incluye criterios no funcionales cuando apliquen: rendimiento, seguridad, privacidad, accesibilidad y coste."
+  design:
+    - "Justifica cada decisión técnica frente a al menos una alternativa."
+    - "Respeta la arquitectura y las convenciones existentes; cualquier patrón nuevo debe justificarse."
+    - "En funcionalidades de IA, define contratos de entrada y salida, manejo de errores, reintentos y fallback, y qué se registra por llamada."
+  tasks:
+    - "Tareas atómicas, cada una verificable y con sus tests."
+    - "Orden test-first cuando el comportamiento sea especificable."
+    - "Incluye la actualización de documentación (README, OpenAPI, .env.example) y una tarea final de verificación completa."
+    - "Cierra con la Definition of Done: tests en verde sin regresiones, documentación actualizada y specs coherentes con el código."
