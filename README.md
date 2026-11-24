@@ -1,6 +1,6 @@
 # AI Engineering · Máster de Ingeniería de IA (LIDR)
 
-Repositorio de entregas de ejercicios y proyectos del programa **AI Engineering**.
+Repositorio de entregas del programa **AI Engineering**: una única aplicación que se construye y evoluciona sesión a sesión.
 
 **Autor:** Julián Castiñeira
 **GitHub:** [@Julian-Castineira](https://github.com/Julian-Castineira)
@@ -8,31 +8,39 @@ Repositorio de entregas de ejercicios y proyectos del programa **AI Engineering*
 
 ## Descripción
 
-Este repositorio reúne el trabajo realizado a lo largo del programa: ejercicios prácticos, proyectos y la documentación asociada a cada entrega.
+Cada sesión del máster amplía o modifica la aplicación anterior. La rama `main` contiene siempre la versión acumulada; cada entrega se puede revisar por separado a través de su rama, su pull request y su tag.
+
+## Cómo revisar una entrega
+
+| Qué revisar | Dónde |
+|-------------|-------|
+| Solo los cambios de la sesión | Pull request `sesion-NN → main` |
+| La aplicación completa tal como se entregó | Tag `entrega-sesion-NN` |
+| El trabajo realizado durante la sesión | Rama `sesion-NN` |
+| La memoria de la entrega | `docs/sesiones/sesion-NN.md` |
 
 ## Estructura
 
 ```
 .
 ├── README.md
-├── .gitignore
-├── modulo-01-[nombre]/
-│   └── ejercicio-01/
-├── modulo-02-[nombre]/
-└── proyecto-final/
+├── docs/
+│   └── sesiones/          # Memoria de cada entrega (sesion-NN.md)
+├── ejercicios/            # Solo ejercicios independientes de la aplicación (sesion-NN/)
+└── openspec/              # Specs de la aplicación y cambios por sesión
 ```
 
-> La estructura se irá ajustando conforme avance el programa.
+> La estructura de la aplicación se definirá con el stack de la primera sesión.
 
 ## Índice de entregas
 
-| Módulo | Entrega | Descripción | Estado |
-|--------|---------|-------------|--------|
-| 01 | [Nombre] | [Resumen breve] | Pendiente |
+| Sesión | Descripción | Rama | PR | Tag | Memoria | Estado |
+|--------|-------------|------|----|-----|---------|--------|
+| 01 | [Resumen breve] | `sesion-01` | — | — | — | Pendiente |
 
-## Cómo ejecutar cada entrega
+## Cómo ejecutar
 
-Cada carpeta incluye su propio `README.md` con los requisitos, la instalación y las instrucciones de ejecución.
+Las instrucciones de instalación y ejecución de la aplicación se documentarán aquí a partir de la primera sesión. La memoria de cada entrega indica cómo probar lo añadido en esa sesión.
 
 ## Seguridad
 

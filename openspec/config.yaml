@@ -1,16 +1,22 @@
 schema: spec-driven
 
 context: |
-  Producto y objetivo: repositorio público de entregas (ejercicios y proyectos) del Máster
-  AI Engineering de LIDR. Cada entrega es autocontenida en su carpeta
-  (modulo-NN-<nombre>/ejercicio-NN/, proyecto-final/), con su propio README y dependencias.
-  Stack y versiones: pendiente de la primera entrega con código; se fijará por entrega.
-  Modelos de IA y proveedores: se definen por entrega.
-  Testing: se define por entrega.
+  Producto y objetivo: repositorio público de entregas del Máster AI Engineering de LIDR.
+  Es una única aplicación que evoluciona sesión a sesión: cada sesión construye sobre la
+  anterior y puede añadir funcionalidades o refactorizar el código existente. main contiene
+  siempre la versión acumulada; el profesor evalúa cada sesión por separado.
+  Arquitectura y estructura: una sola estructura evolutiva de la aplicación (se fijará con
+  el stack de la primera sesión); memoria de cada entrega en docs/sesiones/sesion-NN.md;
+  ejercicios independientes de la aplicación en ejercicios/sesion-NN/.
+  Stack y versiones: pendiente de la primera sesión con código.
+  Modelos de IA y proveedores: pendiente de la primera sesión con código.
+  Testing: pendiente de la primera sesión con código.
   Convenciones: artefactos de OpenSpec y mensajes de commit en español; código e
-  identificadores en inglés; una rama por cambio, nunca directamente sobre main.
+  identificadores en inglés. Rama sesion-NN por sesión, PR a main, tag entrega-sesion-NN
+  al entregar y merge commit sin squash ni rebase; ramas chore/<descripción> para lo demás.
+  Nunca se trabaja directamente sobre main.
   Restricciones: repo público; sin claves, .env, credenciales, datos reales ni nombres de
-  clientes. Variables de entorno documentadas en un .env.example por entrega.
+  clientes. Variables de entorno documentadas en .env.example sin valores reales.
 
 rules:
   proposal:
