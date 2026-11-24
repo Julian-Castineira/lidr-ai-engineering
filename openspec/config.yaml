@@ -1,32 +1,34 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  Producto y objetivo: repositorio público de entregas (ejercicios y proyectos) del Máster
+  AI Engineering de LIDR. Cada entrega es autocontenida en su carpeta
+  (modulo-NN-<nombre>/ejercicio-NN/, proyecto-final/), con su propio README y dependencias.
+  Stack y versiones: pendiente de la primera entrega con código; se fijará por entrega.
+  Modelos de IA y proveedores: se definen por entrega.
+  Testing: se define por entrega.
+  Convenciones: artefactos de OpenSpec y mensajes de commit en español; código e
+  identificadores en inglés; una rama por cambio, nunca directamente sobre main.
+  Restricciones: repo público; sin claves, .env, credenciales, datos reales ni nombres de
+  clientes. Variables de entorno documentadas en un .env.example por entrega.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
-
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+rules:
+  proposal:
+    - "Explica el problema, para quién y el objetivo de negocio antes de la solución."
+    - "Delimita de forma explícita qué entra y qué queda fuera del alcance."
+    - "Enumera ficheros y capas afectadas, cambios en el modelo de datos y migraciones, y contratos de endpoints."
+    - "Si el cambio afecta a datos, APIs públicas o producción, incluye riesgos y plan de rollback."
+    - "Si el cambio toca un LLM, indica modelo, coste y latencia esperados y cómo se evaluará la calidad."
+  specs:
+    - "Escribe requisitos verificables y sin ambigüedades."
+    - "Usa escenarios Given/When/Then con happy path y sad paths (entradas inválidas, errores, fallos del proveedor de IA)."
+    - "Incluye criterios no funcionales cuando apliquen: rendimiento, seguridad, privacidad, accesibilidad y coste."
+  design:
+    - "Justifica cada decisión técnica frente a al menos una alternativa."
+    - "Respeta la arquitectura y las convenciones existentes; cualquier patrón nuevo debe justificarse."
+    - "En funcionalidades de IA, define contratos de entrada y salida, manejo de errores, reintentos y fallback, y qué se registra por llamada."
+  tasks:
+    - "Tareas atómicas, cada una verificable y con sus tests."
+    - "Orden test-first cuando el comportamiento sea especificable."
+    - "Incluye la actualización de documentación (README, OpenAPI, .env.example) y una tarea final de verificación completa."
+    - "Cierra con la Definition of Done: tests en verde sin regresiones, documentación actualizada y specs coherentes con el código."

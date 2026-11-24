@@ -21,4 +21,4 @@ Repositorio **público** de entregas del Máster AI Engineering de LIDR: ejercic
 
 El repo usa OpenSpec (`openspec/`, schema `spec-driven`) para los cambios no triviales: las specs vigentes en `openspec/specs/`, los cambios en curso en `openspec/changes/` y los cerrados en `openspec/changes/archive/`. Usa las skills `openspec-*` instaladas en lugar de un proceso paralelo.
 
-`openspec/config.yaml` está aún sin `context` ni `rules`: complétalo con el stack real cuando exista la primera entrega con código.
+`openspec/config.yaml` define el `context` del repo y las `rules` por artefacto (proposal, specs, design, tasks) que OpenSpec inyecta al generar cada artefacto. El stack aún figura como pendiente: actualízalo en `context` cuando exista la primera entrega con código.
