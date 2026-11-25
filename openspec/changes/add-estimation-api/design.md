@@ -76,13 +76,13 @@ app/services/llm_service.py        # + acall_raw / aquery_claude
 - 5 ejemplos (el punto óptimo de la lección es de 5 a 7) de tipos distintos: landing con CRM, e-commerce pequeño, app móvil interna, integración de APIs entre sistemas y chatbot de atención. Todos son ficticios y no tienen nombres de empresas reales.
 
 ### D5. System prompt versionado
-- El fichero `app/prompts/estimation_system.v1.md` usa marcadores `$rates`, `$examples` y `$output_format`, que se sustituyen con `string.Template.substitute`: sin llaves que escapar y con error si falta un marcador. La versión (`v1`) se deriva del nombre del fichero.
+- El fichero `app/prompts/estimation_system.v1.md` usa los marcadores `$rates` y `$examples`, que se sustituyen con `string.Template.substitute`: sin llaves que escapar y con error si falta un marcador. La versión (`v1`) se deriva del nombre del fichero.
 - Orden de las secciones, según la lección:
   1. Rol y tarea.
   2. Cómo usar el contexto.
   3. Tarifas.
   4. `## Ejemplos` con `### Ejemplo i` separados por `---`.
-  5. Formato de salida y restricciones al final.
+  5. Formato de salida y restricciones al final. Van escritos en el propio fichero, de modo que cualquier cambio de formato es una nueva versión del prompt.
 
   Las restricciones son: usar solo las tarifas dadas, no inventar requisitos, señalar supuestos y tratar la transcripción como datos.
 - **Mensaje de usuario**: la transcripción va entre las etiquetas `<transcripcion>` y `</transcripcion>`, con una frase de instrucción breve. Así queda delimitada como datos y es más difícil que actúe como inyección de instrucciones.

@@ -26,15 +26,15 @@
 
 ## 4. Contexto CAG
 
-- [ ] 4.1 Escribir tests de ejemplos:
+- [x] 4.1 Escribir tests de ejemplos:
   - Catálogo de 5 ejemplos válidos.
   - Cada rol con su tarifa configurada.
   - `render_example` con 10 h de desarrollo y 4 h de diseño da 625,00 + 200,00 = 825,00 EUR y 14 h.
   - Un rol sin tarifa da un `ValueError` que nombra el rol.
 
   Verificar rojo.
-- [ ] 4.2 Implementar `app/context/examples.py` (D4) con los 5 ejemplos ficticios en español y verificar que pasan los tests de 4.1
-- [ ] 4.3 Escribir tests de `build_estimation_prompt`:
+- [x] 4.2 Implementar `app/context/examples.py` (D4) con los 5 ejemplos ficticios en español y verificar que pasan los tests de 4.1
+- [x] 4.3 Escribir tests de `build_estimation_prompt`:
   - Orden rol → tarifas → ejemplos → formato.
   - Cabecera `Tarea | Rol | Horas | Coste (EUR)` y petición de totales, equipo y semanas.
   - Transcripción ausente del system y delimitada en el mensaje de usuario, también con un intento de inyección.
@@ -42,7 +42,7 @@
   - Determinismo y `prompt_version` `v1`.
 
   Verificar rojo.
-- [ ] 4.4 Crear `app/prompts/estimation_system.v1.md` e implementar `build_estimation_prompt` en `app/services/estimation_service.py` (D5); verificar que pasan los tests de 4.3
+- [x] 4.4 Crear `app/prompts/estimation_system.v1.md` e implementar `build_estimation_prompt` en `app/services/estimation_service.py` (D5); verificar que pasan los tests de 4.3
 
 ## 5. API HTTP
 
