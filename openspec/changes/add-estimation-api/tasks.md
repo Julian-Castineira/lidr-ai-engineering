@@ -13,7 +13,7 @@
 
 ## 3. Servicio de LLM: consulta asíncrona y proveedor
 
-- [ ] 3.1 Añadir a `tests/conftest.py` un cliente asíncrono falso, con respuesta, excepción y retardo configurables, y escribir tests de `acall_raw`/`aquery_claude`:
+- [x] 3.1 Añadir a `tests/conftest.py` un cliente asíncrono falso, con respuesta, excepción y retardo configurables, y escribir tests de `acall_raw`/`aquery_claude`:
   - Resultado equivalente, con un coste de 0,002 y `provider` `anthropic`.
   - Errores 401, 429 y 529 tras agotar los reintentos, y timeout.
   - Clave ausente → `configuration` y negativa → `refusal`.
@@ -22,7 +22,7 @@
   - Reintento 529 → 200 con el `AsyncAnthropic` real sobre un transporte simulado.
 
   Verificar rojo.
-- [ ] 3.2 Extraer `_build_request` de `call_raw` e implementar `build_async_client`, `acall_raw` y `aquery_claude` (D2) y `QueryResult.provider` (D3); verificar que pasan los tests de 3.1 y todos los tests existentes de `llm_service`, sin cambiarlos
+- [x] 3.2 Extraer `_build_request` de `call_raw` e implementar `build_async_client`, `acall_raw` y `aquery_claude` (D2) y `QueryResult.provider` (D3); verificar que pasan los tests de 3.1 y todos los tests existentes de `llm_service`, sin cambiarlos
 
 ## 4. Contexto CAG
 

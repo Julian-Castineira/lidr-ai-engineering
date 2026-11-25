@@ -106,9 +106,7 @@ def test_env_example_matches_settings() -> None:
 
     # Los campos con alias se leen sin el prefijo LLM_.
     expected = {
-        field.validation_alias
-        if isinstance(field.validation_alias, str)
-        else f"LLM_{name.upper()}"
+        field.validation_alias if isinstance(field.validation_alias, str) else f"LLM_{name.upper()}"
         for name, field in Settings.model_fields.items()
     }
     assert documented == expected
