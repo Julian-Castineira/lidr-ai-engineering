@@ -67,7 +67,7 @@
 
   Verificar rojo.
 - [x] 5.6 Implementar `app/main.py` (lifespan con fallo rápido, configuración del logging, cliente asíncrono en `app.state`, router con el prefijo `/api/v1` y `/health`) y `app/__init__.__version__`; verificar que pasan los tests de 5.5
-- [ ] 5.7 Añadir un test `live` en `tests/live/` con una transcripción ficticia corta contra `POST /api/v1/estimate`, que compruebe el 200, la cabecera de tabla, tokens > 0 y coste no nulo; verificar que `uv run pytest` lo muestra como deseleccionado y que `uv run pytest -m live` sin clave lo omite
+- [x] 5.7 Añadir un test `live` en `tests/live/` con una transcripción ficticia corta contra `POST /api/v1/estimate`, que compruebe el 200, la cabecera de tabla, tokens > 0 y coste no nulo; verificar que `uv run pytest` lo muestra como deseleccionado y que `uv run pytest -m live` sin clave lo omite
 
 ## 6. Documentación
 
