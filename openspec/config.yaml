@@ -5,12 +5,24 @@ context: |
   Es una única aplicación que evoluciona sesión a sesión: cada sesión construye sobre la
   anterior y puede añadir funcionalidades o refactorizar el código existente. main contiene
   siempre la versión acumulada; el profesor evalúa cada sesión por separado.
-  Arquitectura y estructura: una sola estructura evolutiva de la aplicación (se fijará con
-  el stack de la primera sesión); memoria de cada entrega en docs/sesiones/sesion-NN.md;
-  ejercicios independientes de la aplicación en ejercicios/sesion-NN/.
-  Stack y versiones: pendiente de la primera sesión con código.
-  Modelos de IA y proveedores: pendiente de la primera sesión con código.
-  Testing: pendiente de la primera sesión con código.
+  Arquitectura y estructura: una sola estructura evolutiva de la aplicación. Paquete app/ en
+  la raíz: app/config.py (Pydantic Settings) y app/services/ con la lógica, incluidas las
+  llamadas al LLM (llm_service.py es el único módulo que importa el SDK de Anthropic); a
+  partir de la Sesión 2 se añaden app/main.py (FastAPI) y app/routers/ con endpoints finos.
+  experiments/ para scripts de experimentación; memoria de cada entrega en
+  docs/sesiones/sesion-NN.md; ejercicios independientes en ejercicios/sesion-NN/.
+  Stack y versiones: Python 3.11+ (3.12 en .python-version) gestionado con uv
+  (pyproject.toml + uv.lock, sin build backend); anthropic 2.x (usa httpx2),
+  pydantic-settings 2.x; dev: pytest, ruff y mypy en modo strict.
+  Modelos de IA y proveedores: Anthropic (Messages API). Modelo por defecto
+  claude-haiku-5-5; claude-haiku-4-5-20251001 solo como modelo legacy de experimentos.
+  Modelo, parámetros y precios en configuración (variables LLM_*), nunca en el código de
+  negocio. El SDK 2.x usa la API 2026-10-21, que elimina temperature/top_p/top_k en todos
+  los modelos; solo las llamadas legacy de experiments/ usan la API 2023-06-01.
+  claude-haiku-5-5 rechaza además budget_tokens (razonamiento adaptativo con effort).
+  Testing: pytest con el LLM simulado (sin red ni API key) en tests/unit; smoke test real
+  en tests/live con el marcador live, excluido por defecto (uv run pytest -m live).
+  Calidad: ruff check, ruff format --check y mypy app experiments.
   Convenciones: artefactos de OpenSpec y mensajes de commit en español; código e
   identificadores en inglés. Rama sesion-NN por sesión, PR a main, tag entrega-sesion-NN
   al entregar y merge commit sin squash ni rebase; ramas chore/<descripción> para lo demás.

@@ -23,24 +23,55 @@ Cada sesión del máster amplía o modifica la aplicación anterior. La rama `ma
 
 ```
 .
-├── README.md
+├── app/                   # Aplicación (paquete Python)
+│   ├── config.py          # Configuración desde variables de entorno / .env
+│   └── services/          # Lógica de negocio; llm_service.py es el acceso a Claude
+├── experiments/           # Scripts de experimentación con la API (NN_tema.py)
+├── tests/
+│   ├── unit/              # Tests sin red ni API key (LLM simulado)
+│   └── live/              # Smoke test contra la API real (opt-in, con coste)
 ├── docs/
 │   └── sesiones/          # Memoria de cada entrega (sesion-NN.md)
 ├── ejercicios/            # Solo ejercicios independientes de la aplicación (sesion-NN/)
-└── openspec/              # Specs de la aplicación y cambios por sesión
+├── openspec/              # Specs de la aplicación y cambios por sesión
+├── pyproject.toml         # Proyecto y dependencias (uv)
+└── .env.example           # Variables de entorno documentadas, sin valores reales
 ```
 
-> La estructura de la aplicación se definirá con el stack de la primera sesión.
+Stack: Python 3.11+ con [uv](https://docs.astral.sh/uv/), SDK oficial `anthropic` 2.x (API `2026-10-21`), Pydantic Settings, pytest, ruff y mypy. Modelo por defecto: `claude-haiku-5-5`.
 
 ## Índice de entregas
 
 | Sesión | Descripción | Rama | PR | Tag | Memoria | Estado |
 |--------|-------------|------|----|-----|---------|--------|
-| 01 | [Resumen breve] | `sesion-01` | — | — | — | Pendiente |
+| 01 | LLMs y setup: cliente de la Messages API de Anthropic con métricas, errores tipados y experimentos de parámetros | `sesion-01` | — | — | [sesion-01.md](docs/sesiones/sesion-01.md) | En curso |
 
 ## Cómo ejecutar
 
-Las instrucciones de instalación y ejecución de la aplicación se documentarán aquí a partir de la primera sesión. La memoria de cada entrega indica cómo probar lo añadido en esa sesión.
+Requisitos: [uv](https://docs.astral.sh/uv/getting-started/installation/) (instala Python 3.12 si hace falta) y una API key de Anthropic.
+
+```bash
+uv sync                      # crea .venv e instala dependencias desde uv.lock
+cp .env.example .env         # y rellena ANTHROPIC_API_KEY en .env
+```
+
+Calidad (sin red ni API key):
+
+```bash
+uv run pytest                # tests unitarios; el smoke test real queda excluido
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy app experiments
+```
+
+Llamadas reales a la API (tienen coste, del orden de céntimos):
+
+```bash
+uv run pytest -m live                         # smoke test: una llamada
+uv run python -m experiments.01_basic         # ver experiments/ para el resto (01 a 08)
+```
+
+La memoria de cada entrega indica cómo probar lo añadido en esa sesión.
 
 ## Seguridad
 
