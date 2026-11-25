@@ -71,7 +71,7 @@
 
 ## 6. Documentación
 
-- [ ] 6.1 Actualizar `README.md`:
+- [x] 6.1 Actualizar `README.md`:
   - Estructura, con `main.py`, `routers/`, `schemas/`, `context/` y `prompts/`.
   - «Cómo ejecutar», con `uv run uvicorn app.main:app --reload`, `/docs` y un ejemplo de curl.
   - Fila de la Sesión 02 en el índice, con estado «En curso».
@@ -84,7 +84,7 @@
   - Verificación.
 
   Verificar que el curl documentado devuelve 200 con el servicio levantado.
-- [ ] 6.3 Actualizar la sección «Estructura» de `CLAUDE.md` y el `context` de `openspec/config.yaml` (FastAPI, uvicorn, capas, variables nuevas y `LLM_PROVIDER`); verificar que `openspec validate add-estimation-api --strict` sigue pasando
+- [x] 6.3 Actualizar la sección «Estructura» de `CLAUDE.md` y el `context` de `openspec/config.yaml` (FastAPI, uvicorn, capas, variables nuevas y `LLM_PROVIDER`); verificar que `openspec validate add-estimation-api --strict` sigue pasando
 
 ## 7. Verificación integral
 
