@@ -58,7 +58,7 @@
 
   Verificar rojo.
 - [x] 5.4 Implementar `estimate()` en `estimation_service.py` y `app/routers/estimations.py` con la tabla de errores (D6) y el registro (D8); verificar que pasan los tests de 5.3
-- [ ] 5.5 Escribir tests de la aplicación:
+- [x] 5.5 Escribir tests de la aplicación:
   - `GET /health` da 200 con `healthy`, la versión y el entorno, sin llamar al LLM.
   - `/openapi.json` incluye `POST /api/v1/estimate` (sin el prefijo duplicado) con sus modelos, y `/health`.
   - `/docs` da 200.
@@ -66,7 +66,7 @@
   - `LOG_LEVEL` `WARNING` suprime el registro informativo.
 
   Verificar rojo.
-- [ ] 5.6 Implementar `app/main.py` (lifespan con fallo rápido, configuración del logging, cliente asíncrono en `app.state`, router con el prefijo `/api/v1` y `/health`) y `app/__init__.__version__`; verificar que pasan los tests de 5.5
+- [x] 5.6 Implementar `app/main.py` (lifespan con fallo rápido, configuración del logging, cliente asíncrono en `app.state`, router con el prefijo `/api/v1` y `/health`) y `app/__init__.__version__`; verificar que pasan los tests de 5.5
 - [ ] 5.7 Añadir un test `live` en `tests/live/` con una transcripción ficticia corta contra `POST /api/v1/estimate`, que compruebe el 200, la cabecera de tabla, tokens > 0 y coste no nulo; verificar que `uv run pytest` lo muestra como deseleccionado y que `uv run pytest -m live` sin clave lo omite
 
 ## 6. Documentación
