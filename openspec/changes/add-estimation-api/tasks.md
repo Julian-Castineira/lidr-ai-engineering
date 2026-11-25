@@ -46,9 +46,9 @@
 
 ## 5. API HTTP
 
-- [ ] 5.1 Escribir tests de los schemas: transcripción de 49 caracteres, solo espacios o por encima del máximo → error; campo adicional → error; `usage.total_tokens` calculado y `created_at` en UTC. Verificar rojo
-- [ ] 5.2 Implementar `app/schemas/estimation.py` (D6) y verificar que pasan los tests de 5.1
-- [ ] 5.3 Escribir tests del endpoint con `TestClient` y el cliente asíncrono falso inyectado:
+- [x] 5.1 Escribir tests de los schemas: transcripción de 49 caracteres, solo espacios o por encima del máximo → error; campo adicional → error; `usage.total_tokens` calculado y `created_at` en UTC. Verificar rojo
+- [x] 5.2 Implementar `app/schemas/estimation.py` (D6) y verificar que pasan los tests de 5.1
+- [x] 5.3 Escribir tests del endpoint con `TestClient` y el cliente asíncrono falso inyectado:
   - 200 con todos los campos (4.000/1.000 tokens dan un coste de 0,0009 y `total_tokens` 5.000).
   - `cost_usd` nulo con un modelo sin precio.
   - `finish_reason` `stop`, `length` (con aviso) y `other`.
@@ -57,7 +57,7 @@
   - Registro con las métricas, la versión del prompt o el `error_type`, y sin el texto de la transcripción (`caplog`).
 
   Verificar rojo.
-- [ ] 5.4 Implementar `estimate()` en `estimation_service.py` y `app/routers/estimations.py` con la tabla de errores (D6) y el registro (D8); verificar que pasan los tests de 5.3
+- [x] 5.4 Implementar `estimate()` en `estimation_service.py` y `app/routers/estimations.py` con la tabla de errores (D6) y el registro (D8); verificar que pasan los tests de 5.3
 - [ ] 5.5 Escribir tests de la aplicación:
   - `GET /health` da 200 con `healthy`, la versión y el entorno, sin llamar al LLM.
   - `/openapi.json` incluye `POST /api/v1/estimate` (sin el prefijo duplicado) con sus modelos, y `/health`.

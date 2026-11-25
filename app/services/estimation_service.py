@@ -1,16 +1,26 @@
 """Estimación de proyectos con arquitectura CAG: contexto precargado + una llamada al LLM."""
 
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from string import Template
+from typing import Literal
+
+import anthropic
 
 from app.config import Settings, get_settings
 from app.context.examples import ESTIMATION_EXAMPLES, format_eur, load_examples, render_example
+from app.services.llm_service import aquery_claude
+from app.services.schemas import QueryError, QueryResult
+
+logger = logging.getLogger(__name__)
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 PROMPT_VERSION = "v1"
 TRANSCRIPTION_TAG = "transcripcion"
+
+FinishReason = Literal["stop", "length", "other"]
 
 
 @dataclass(frozen=True)
@@ -18,6 +28,64 @@ class EstimationPrompt:
     system: str
     user_message: str
     prompt_version: str
+
+
+@dataclass(frozen=True)
+class EstimationOutcome:
+    result: QueryResult
+    finish_reason: FinishReason
+    prompt_version: str
+
+
+def to_finish_reason(stop_reason: str | None) -> FinishReason:
+    """Motivo de finalización independiente del proveedor."""
+    if stop_reason in ("end_turn", "stop_sequence"):
+        return "stop"
+    if stop_reason == "max_tokens":
+        return "length"
+    return "other"
+
+
+async def estimate(
+    transcription: str,
+    *,
+    client: anthropic.AsyncAnthropic | None = None,
+    settings: Settings | None = None,
+) -> EstimationOutcome | QueryError:
+    """Construye el contexto CAG, consulta al LLM y registra las métricas de la llamada.
+
+    Nunca registra la transcripción ni la estimación (pueden contener datos personales).
+    """
+    settings = settings or get_settings()
+    prompt = build_estimation_prompt(transcription, settings=settings)
+    result = await aquery_claude(
+        prompt.user_message, prompt.system, client=client, settings=settings
+    )
+    if isinstance(result, QueryError):
+        logger.warning(
+            "estimation_failed error_type=%s status_code=%s prompt_version=%s",
+            result.error_type,
+            result.status_code,
+            prompt.prompt_version,
+        )
+        return result
+
+    finish_reason = to_finish_reason(result.stop_reason)
+    logger.info(
+        "estimation_completed model=%s input_tokens=%d output_tokens=%d latency_ms=%.0f "
+        "cost_usd=%s finish_reason=%s stop_reason=%s prompt_version=%s",
+        result.model,
+        result.input_tokens,
+        result.output_tokens,
+        result.latency_ms,
+        result.cost_usd,
+        finish_reason,
+        result.stop_reason,
+        prompt.prompt_version,
+    )
+    return EstimationOutcome(
+        result=result, finish_reason=finish_reason, prompt_version=prompt.prompt_version
+    )
 
 
 @lru_cache
