@@ -2,14 +2,14 @@
 
 ## 1. Dependencias
 
-- [ ] 1.1 Añadir `uv add fastapi "uvicorn[standard]"` y verificar que `uv.lock` se actualiza y que `uv run python -c "import fastapi, uvicorn"` funciona
-- [ ] 1.2 Comprobar qué cliente HTTP necesita `TestClient` (`uv run python -c "from fastapi.testclient import TestClient"`) y añadir al grupo `dev` solo lo que falte (`httpx` o `httpx2`); verificar que el import funciona y que `uv run pytest` sigue en verde (95 tests)
+- [x] 1.1 Añadir `uv add fastapi "uvicorn[standard]"` y verificar que `uv.lock` se actualiza y que `uv run python -c "import fastapi, uvicorn"` funciona
+- [x] 1.2 Comprobar qué cliente HTTP necesita `TestClient` (`uv run python -c "from fastapi.testclient import TestClient"`) y añadir al grupo `dev` solo lo que falte (`httpx` o `httpx2`); verificar que el import funciona y que `uv run pytest` sigue en verde (95 tests)
 
 ## 2. Configuración
 
-- [ ] 2.1 Escribir tests de `Settings`: `LLM_PROVIDER` por defecto `anthropic` y `openai` rechazado nombrando la variable, `APP_ENV` y `LOG_LEVEL` leídos sin prefijo con sus valores por defecto (`development`, `INFO`) y valores inválidos rechazados, tarifas por defecto, `ESTIMATION_HOURLY_RATES` en JSON con tarifas ≤ 0 rechazadas y `ESTIMATION_MAX_TRANSCRIPTION_CHARS` por defecto 60.000; verificar rojo
-- [ ] 2.2 Ampliar `app/config.py` (D3) y verificar que pasan los tests de 2.1 y los de configuración existentes
-- [ ] 2.3 Documentar en `.env.example` las variables nuevas, con su valor por defecto y una nota sobre `LLM_PROVIDER` (solo `anthropic` hasta la Sesión 3); verificar que el test que compara `.env.example` con los campos de `Settings` pasa
+- [x] 2.1 Escribir tests de `Settings`: `LLM_PROVIDER` por defecto `anthropic` y `openai` rechazado nombrando la variable, `APP_ENV` y `LOG_LEVEL` leídos sin prefijo con sus valores por defecto (`development`, `INFO`) y valores inválidos rechazados, tarifas por defecto, `ESTIMATION_HOURLY_RATES` en JSON con tarifas ≤ 0 rechazadas y `ESTIMATION_MAX_TRANSCRIPTION_CHARS` por defecto 60.000; verificar rojo
+- [x] 2.2 Ampliar `app/config.py` (D3) y verificar que pasan los tests de 2.1 y los de configuración existentes
+- [x] 2.3 Documentar en `.env.example` las variables nuevas, con su valor por defecto y una nota sobre `LLM_PROVIDER` (solo `anthropic` hasta la Sesión 3); verificar que el test que compara `.env.example` con los campos de `Settings` pasa
 
 ## 3. Servicio de LLM: consulta asíncrona y proveedor
 

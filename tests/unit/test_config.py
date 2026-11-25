@@ -1,4 +1,5 @@
 import re
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -28,6 +29,11 @@ def clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "LLM_LEGACY_MODEL",
         "LLM_LEGACY_API_VERSION",
         "LLM_PRICING_JSON",
+        "LLM_PROVIDER",
+        "APP_ENV",
+        "LOG_LEVEL",
+        "ESTIMATION_HOURLY_RATES",
+        "ESTIMATION_MAX_TRANSCRIPTION_CHARS",
     ]:
         monkeypatch.delenv(name, raising=False)
 
@@ -98,8 +104,12 @@ def test_env_example_matches_settings() -> None:
     content = (ROOT / ".env.example").read_text(encoding="utf-8")
     documented = set(re.findall(r"^#?\s*([A-Z_]+)=", content, flags=re.M))
 
-    expected = {"ANTHROPIC_API_KEY"} | {
-        f"LLM_{name.upper()}" for name in Settings.model_fields if name != "anthropic_api_key"
+    # Los campos con alias se leen sin el prefijo LLM_.
+    expected = {
+        field.validation_alias
+        if isinstance(field.validation_alias, str)
+        else f"LLM_{name.upper()}"
+        for name, field in Settings.model_fields.items()
     }
     assert documented == expected
 
@@ -120,3 +130,54 @@ def test_env_example_loads_as_dotenv(tmp_path: Path) -> None:
     assert settings.temperature is None
     assert settings.effort is None
     assert settings.model == "claude-haiku-5-5"
+
+
+def test_app_defaults() -> None:
+    settings = make_settings()
+
+    assert settings.provider == "anthropic"
+    assert settings.app_env == "development"
+    assert settings.log_level == "INFO"
+    assert settings.estimation_hourly_rates == {
+        "desarrollo": Decimal("62.50"),
+        "diseño": Decimal("50.00"),
+        "gestión": Decimal("55.00"),
+        "QA": Decimal("45.00"),
+    }
+    assert settings.estimation_max_transcription_chars == 60_000
+
+
+def test_app_variables_are_read_without_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("LOG_LEVEL", "WARNING")
+    monkeypatch.setenv("ESTIMATION_HOURLY_RATES", '{"desarrollo": 70, "QA": 40.5}')
+    monkeypatch.setenv("ESTIMATION_MAX_TRANSCRIPTION_CHARS", "1000")
+    settings = make_settings()
+
+    assert settings.app_env == "production"
+    assert settings.log_level == "WARNING"
+    assert settings.estimation_hourly_rates == {"desarrollo": Decimal("70"), "QA": Decimal("40.5")}
+    assert settings.estimation_max_transcription_chars == 1000
+
+
+@pytest.mark.parametrize(
+    ("variable", "value"),
+    [
+        ("LLM_PROVIDER", "openai"),
+        ("APP_ENV", "staging"),
+        ("LOG_LEVEL", "VERBOSE"),
+        ("ESTIMATION_HOURLY_RATES", '{"desarrollo": 0}'),
+        ("ESTIMATION_HOURLY_RATES", '{"desarrollo": -10}'),
+        ("ESTIMATION_HOURLY_RATES", "{}"),
+        ("ESTIMATION_MAX_TRANSCRIPTION_CHARS", "49"),
+    ],
+)
+def test_invalid_app_values_name_the_variable(
+    monkeypatch: pytest.MonkeyPatch, variable: str, value: str
+) -> None:
+    monkeypatch.setenv(variable, value)
+    with pytest.raises(ValidationError) as exc_info:
+        make_settings()
+
+    message = str(exc_info.value)
+    assert variable in message or variable.removeprefix("LLM_").lower() in message
