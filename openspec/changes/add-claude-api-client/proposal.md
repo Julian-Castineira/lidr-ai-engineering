@@ -43,7 +43,7 @@ Para quién: el profesor, que evalúa la entrega de forma aislada, y el propio a
 
 ## Impact
 
-- **Ficheros nuevos**: `pyproject.toml`, `uv.lock`, `.python-version`, `.env.example`, `app/__init__.py`, `app/config.py`, `app/services/__init__.py`, `app/services/llm_service.py`, `app/services/pricing.py`, `experiments/*.py`, `tests/conftest.py`, `tests/unit/*.py`, `tests/live/test_smoke.py`, `docs/sesiones/sesion-01.md`.
+- **Ficheros nuevos**: `pyproject.toml`, `uv.lock`, `.python-version`, `.env.example`, `app/__init__.py`, `app/config.py`, `app/services/__init__.py`, `app/services/llm_service.py`, `app/services/pricing.py`, `app/services/schemas.py`, `experiments/*.py`, `tests/conftest.py`, `tests/unit/*.py`, `tests/live/test_smoke.py`, `docs/sesiones/sesion-01.md`.
 - **Ficheros modificados**: `README.md` (estructura, cómo ejecutar, índice de entregas), `openspec/config.yaml` (`context`: stack, modelos, testing). `.gitignore` ya excluye `.env` y `.venv`; no requiere cambios.
 - **Modelo de datos / migraciones / endpoints**: ninguno. No hay base de datos ni API HTTP en esta sesión.
 - **Dependencias nuevas** (requieren aprobación): runtime `anthropic` y `pydantic-settings` (trae `pydantic` y `python-dotenv` como dependencias transitivas, por lo que no se añade `python-dotenv` aparte); desarrollo `pytest` y `ruff`; se propone además `mypy` para el type-check de la Definition of Done. Versiones: la última estable en el momento de `uv add`, fijada en `uv.lock`.

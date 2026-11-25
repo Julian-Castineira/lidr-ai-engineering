@@ -88,11 +88,15 @@ class Tracker:
         prefix = "ERROR ESPERADO" if expected_error else "ERROR"
         print(f"{prefix} [{error.error_type}{status}]: {error.error}")
         if error.error_type == "not_found":
-            print(
-                f"AVISO: el modelo puede haberse retirado. Si es el legacy "
-                f"({self.settings.legacy_model}), estos experimentos ya no son reproducibles; "
-                "cambia LLM_LEGACY_MODEL en .env."
-            )
+            # La API nombra el modelo en el mensaje del 404 («model: <id>»).
+            legacy = self.settings.legacy_model
+            if legacy in error.error:
+                print(
+                    f"AVISO: el modelo legacy {legacy} ya no está disponible; las llamadas "
+                    "que lo usan no son reproducibles. Cambia LLM_LEGACY_MODEL en .env."
+                )
+            else:
+                print("AVISO: el modelo puede haberse retirado o el ID no es válido.")
         if not expected_error:
             self.errors.append(error.error_type)
 

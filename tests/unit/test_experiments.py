@@ -173,7 +173,21 @@ def test_unavailable_legacy_model_is_reported_without_failing(
     out = capsys.readouterr().out
     assert exit_code == 0
     assert "[not_found 404]" in out
+    assert f"el modelo legacy {LEGACY} ya no está disponible" in out
+
+
+def test_not_found_for_another_model_gets_generic_notice(
+    settings: Settings, capsys: pytest.CaptureFixture[str]
+) -> None:
+    tracker = Tracker(settings)
+
+    tracker.show(
+        "x", QueryError(error="model: otro-modelo", error_type="not_found", status_code=404)
+    )
+
+    out = capsys.readouterr().out
     assert "puede haberse retirado" in out
+    assert "modelo legacy" not in out
 
 
 def test_tracker_accumulates_tokens_and_cost(

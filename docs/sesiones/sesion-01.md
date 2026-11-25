@@ -18,7 +18,7 @@ Se fija el stack del repositorio y se crea la primera capa de la aplicación, pe
 | Servicio LLM | `app/services/llm_service.py` | `query_claude` (la función de la lección), `call_raw` para parámetros avanzados, `Conversation` multiturno y mapeo de errores. Mide latencia, tokens (incluidos los de caché) y coste por llamada. |
 | Contratos | `app/services/schemas.py` | `QueryResult` (el dict de la lección más latencia, caché, bloques y razonamiento) y `QueryError` con categoría y código HTTP. |
 | Experimentos | `experiments/01…08` | Llamada básica, multiturno, `temperature`, `top_p`/`top_k`, `max_tokens`, `stop_sequences`, razonamiento y comparación de modelos. Cada uno imprime métricas y el coste total. |
-| Tests | `tests/unit`, `tests/live` | 88 tests sin red ni clave (LLM simulado, reintentos con el cliente real del SDK sobre un transporte simulado) y un smoke test real opt-in. |
+| Tests | `tests/unit`, `tests/live` | 95 tests sin red ni clave (LLM simulado, reintentos con el cliente real del SDK sobre un transporte simulado) y un smoke test real opt-in. |
 
 El diseño se especificó antes con OpenSpec: `openspec/changes/add-claude-api-client/` (propuesta, specs `llm-client` y `llm-experiments`, diseño y tareas).
 
@@ -68,7 +68,7 @@ Coste estimado de una pasada completa (smoke test + ocho experimentos): menos de
 
 ## Verificación
 
-- Sin red: 94 tests unitarios en verde; `ruff check`, `ruff format --check` y `mypy --strict` sin errores.
+- Sin red: 95 tests unitarios en verde; `ruff check`, `ruff format --check` y `mypy --strict` sin errores.
 - Con la API real (25-11-2026): smoke test en verde y los ocho experimentos ejecutados sin errores no esperados. Coste total de todas las ejecuciones, incluida una primera pasada fallida por la versión de API: ≈ 0,01 USD.
 
 ### Extracto de resultados reales
