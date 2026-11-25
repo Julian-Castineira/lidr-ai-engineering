@@ -7,11 +7,9 @@ from pathlib import Path
 from string import Template
 from typing import Literal
 
-import anthropic
-
 from app.config import Settings, get_settings
 from app.context.examples import ESTIMATION_EXAMPLES, format_eur, load_examples, render_example
-from app.services.llm_service import aquery_claude
+from app.services.llm_service import AsyncLLMClient, aquery_claude
 from app.services.schemas import QueryError, QueryResult
 
 logger = logging.getLogger(__name__)
@@ -49,7 +47,7 @@ def to_finish_reason(stop_reason: str | None) -> FinishReason:
 async def estimate(
     transcription: str,
     *,
-    client: anthropic.AsyncAnthropic | None = None,
+    client: AsyncLLMClient | None = None,
     settings: Settings | None = None,
 ) -> EstimationOutcome | QueryError:
     """Construye el contexto CAG, consulta al LLM y registra las métricas de la llamada.

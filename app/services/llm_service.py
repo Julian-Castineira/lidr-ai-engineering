@@ -18,6 +18,9 @@ from app.services.schemas import ErrorType, QueryError, QueryResult
 
 logger = logging.getLogger(__name__)
 
+# Tipo del cliente asíncrono para el resto de capas, que no importan el SDK.
+AsyncLLMClient = anthropic.AsyncAnthropic
+
 
 def _api_key(settings: Settings) -> str | None:
     return settings.anthropic_api_key.get_secret_value() if settings.anthropic_api_key else None

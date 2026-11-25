@@ -2,7 +2,6 @@
 
 from typing import Annotated, Any
 
-import anthropic
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.config import Settings, get_settings
@@ -14,6 +13,7 @@ from app.schemas.estimation import (
     TokenUsage,
 )
 from app.services.estimation_service import estimate
+from app.services.llm_service import AsyncLLMClient
 from app.services.schemas import ErrorType, QueryError
 
 router = APIRouter(tags=["estimaciones"])
@@ -61,9 +61,9 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
 }
 
 
-def get_llm_client(request: Request) -> anthropic.AsyncAnthropic:
+def get_llm_client(request: Request) -> AsyncLLMClient:
     """Cliente asíncrono compartido, creado en el lifespan de la aplicación."""
-    client: anthropic.AsyncAnthropic = request.app.state.llm_client
+    client: AsyncLLMClient = request.app.state.llm_client
     return client
 
 
@@ -82,7 +82,7 @@ def _http_error(error: QueryError) -> HTTPException:
 )
 async def create_estimation(
     body: EstimationRequest,
-    client: Annotated[anthropic.AsyncAnthropic, Depends(get_llm_client)],
+    client: Annotated[AsyncLLMClient, Depends(get_llm_client)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> EstimationResponse:
     outcome = await estimate(body.transcription, client=client, settings=settings)
