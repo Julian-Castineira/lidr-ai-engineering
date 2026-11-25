@@ -22,7 +22,7 @@ El profesor evalúa cada sesión por separado, así que este flujo no debe rompe
 3. Al entregar, tag anotado `entrega-sesion-NN` sobre el último commit entregado.
 4. Fusión en `main` en el momento de la entrega, sin esperar a la corrección, con **merge commit** (`--no-ff`); nunca squash ni rebase.
 5. Las ramas `sesion-NN` no se borran, y ni ellas ni los tags `entrega-sesion-NN` se reescriben tras la entrega. Las correcciones por feedback van en una rama nueva o en la sesión siguiente.
-6. Al cerrar cada sesión, añade su memoria en `docs/sesiones/` y su fila en el «Índice de entregas» del `README.md` (rama, PR, tag, memoria y estado).
+6. Al cerrar cada sesión, añade su memoria en `docs/sesiones/` y su fila en el «Índice de entregas» del `README.md` (rama, PR, tag, memoria y estado). La actualización final de la fila (tag y estado «Entregada») se commitea en `sesion-NN` antes de crear el tag, para que la entrega la incluya y no haga falta un commit directo en `main`.
 
 Los cambios que no son de una sesión (configuración, documentación general) van en ramas `chore/<descripción>`.
 
