@@ -88,7 +88,7 @@
 
 ## 7. Verificación integral
 
-- [ ] 7.1 Ejecutar `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .` y `uv run mypy app experiments`; verificar que todo está en verde, sin regresiones en los 95 tests de la Sesión 1
+- [x] 7.1 Ejecutar `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .` y `uv run mypy app experiments`; verificar que todo está en verde, sin regresiones en los 95 tests de la Sesión 1
 - [ ] 7.2 Con autorización explícita del autor para gastar crédito:
   - Ejecutar `uv run pytest -m live`.
   - Levantar `uv run uvicorn app.main:app` y probar `/health`, `/docs` y el curl de la memoria.
