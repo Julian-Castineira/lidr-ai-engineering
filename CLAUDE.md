@@ -32,7 +32,7 @@ Los cambios que no son de una sesión (configuración, documentación general) v
 
 ## OpenSpec
 
-El repo usa OpenSpec (`openspec/`, schema `spec-driven`) para los cambios no triviales: las specs vigentes en `openspec/specs/`, los cambios en curso en `openspec/changes/` y los cerrados en `openspec/changes/archive/`. Usa las skills `openspec-*` instaladas en lugar de un proceso paralelo. Cada funcionalidad de una sesión es un cambio de OpenSpec que se archiva antes de fusionar, de modo que `openspec/specs/` describe la aplicación completa.
+El repo usa OpenSpec (`openspec/`, schema `spec-driven`) para los cambios no triviales: las specs vigentes en `openspec/specs/`, los cambios en curso en `openspec/changes/` y los cerrados en `openspec/changes/archive/`. Usa las skills `openspec-*` instaladas en lugar de un proceso paralelo. Cada funcionalidad de una sesión es un cambio de OpenSpec que se verifica con `openspec-verify-change` y se archiva antes de fusionar, de modo que `openspec/specs/` describe la aplicación completa.
 
 `openspec/config.yaml` define el `context` del repo y las `rules` por artefacto (proposal, specs, design, tasks) que OpenSpec inyecta al generar cada artefacto. El stack aún figura como pendiente: actualízalo en `context` en la primera sesión con código.
 
