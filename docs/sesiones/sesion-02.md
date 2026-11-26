@@ -85,6 +85,8 @@ curl -s -X POST http://127.0.0.1:8000/api/v1/estimate \
   -d '{"transcription": "Comercial: Gracias por la reunión. Resumo lo que necesitáis. Cliente: Somos una escuela de música. Queremos una landing para la campaña de matrícula con un formulario que cree el contacto en HubSpot, y un blog sencillo para publicar dos noticias al mes. Tenemos logotipo pero no diseño web. Comercial: ¿Plazo? Cliente: Que esté lista en un mes."}'
 ```
 
+En Windows con Git Bash, los acentos de `-d` no siempre llegan en UTF-8 y FastAPI responde 400 («error parsing the body»). En ese caso, guarda el JSON en un fichero UTF-8 y envíalo con `--data-binary @body.json`, o usa `/docs`.
+
 Pruebas con la API real (con coste): `uv run pytest -m live`.
 
 ## Verificación
@@ -97,4 +99,20 @@ Pruebas con la API real (con coste): `uv run pytest -m live`.
   - Una transcripción corta devuelve 422.
   - El curl de estimación llega a Anthropic y devuelve 502 `authentication` con mensaje genérico.
   - El registro muestra la categoría del error sin la transcripción.
-- **Con la API real**: pendiente de ejecutar con autorización del autor.
+- **Con la API real (26-11-2026)**:
+  - `uv run pytest -m live`: los 2 tests pasan (el smoke test y la estimación de extremo a extremo), en 8 s.
+  - Curl de la memoria con el servicio levantado: 200 en 6,6 s.
+    - Tokens: 3.451 de entrada (instrucciones, 5 ejemplos y la transcripción) y 1.586 de salida.
+    - Coste: 0,0011 USD. `finish_reason`: `stop`.
+    - El registro muestra las métricas sin la transcripción.
+  - Coste total de la verificación real: unos 0,003 USD.
+
+### Extracto de la estimación real
+
+Para la transcripción del curl (landing con HubSpot y blog para una escuela de música), el modelo devolvió:
+- **Tabla:** 7 tareas con el formato exigido.
+- **Totales:** 64 h y 3.650,00 EUR, recalculados por código. Las horas suman 64, cada coste es horas × tarifa del rol y los costes suman 3.650,00.
+- **Equipo y duración:** 4 personas, en su mayoría a tiempo parcial, durante 4 semanas.
+- **Supuestos:** licencia de HubSpot y textos a cargo del cliente, blog sin comentarios ni suscripciones, sin analítica avanzada.
+
+La estructura y la granularidad siguen a los ejemplos sin copiar sus tareas.

@@ -93,6 +93,8 @@ curl -s -X POST http://127.0.0.1:8000/api/v1/estimate \
   -d '{"transcription": "Cliente: necesitamos una landing para captar alumnos conectada a HubSpot y un blog para publicar noticias dos veces al mes."}'
 ```
 
+En Windows con Git Bash, si el texto lleva acentos y la respuesta es 400 («error parsing the body»), envía el JSON desde un fichero UTF-8 con `--data-binary @body.json` o usa `/docs`.
+
 | Endpoint | Respuesta |
 |---|---|
 | `GET /health` | `{status, version, environment}` |

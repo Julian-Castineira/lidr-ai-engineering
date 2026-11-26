@@ -77,7 +77,7 @@
   - Fila de la Sesión 02 en el índice, con estado «En curso».
 
   Verificar que los comandos documentados se ejecutan tal como están escritos.
-- [ ] 6.2 Escribir `docs/sesiones/sesion-02.md`:
+- [x] 6.2 Escribir `docs/sesiones/sesion-02.md`:
   - Enunciado resumido, qué se ha hecho y decisiones.
   - Desviaciones respecto al enunciado y al repositorio de referencia, con su motivo.
   - Cómo probarlo, con el curl de ejemplo de una transcripción ficticia de landing + HubSpot + blog.
@@ -89,7 +89,7 @@
 ## 7. Verificación integral
 
 - [x] 7.1 Ejecutar `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .` y `uv run mypy app experiments`; verificar que todo está en verde, sin regresiones en los 95 tests de la Sesión 1
-- [ ] 7.2 Con autorización explícita del autor para gastar crédito:
+- [x] 7.2 Con autorización explícita del autor para gastar crédito:
   - Ejecutar `uv run pytest -m live`.
   - Levantar `uv run uvicorn app.main:app` y probar `/health`, `/docs` y el curl de la memoria.
   - Comprobar en el registro las métricas y la ausencia del texto de la transcripción.
