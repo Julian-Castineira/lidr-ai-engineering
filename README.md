@@ -50,7 +50,7 @@ Stack: Python 3.11+ con [uv](https://docs.astral.sh/uv/), FastAPI + uvicorn, SDK
 | Sesión | Descripción | Rama | PR | Tag | Memoria | Estado |
 |--------|-------------|------|----|-----|---------|--------|
 | 01 | LLMs y setup: cliente de la Messages API de Anthropic con métricas, errores tipados y experimentos de parámetros | `sesion-01` | [#2](https://github.com/Julian-Castineira/lidr-ai-engineering/pull/2) | [`entrega-sesion-01`](https://github.com/Julian-Castineira/lidr-ai-engineering/tree/entrega-sesion-01) | [sesion-01.md](docs/sesiones/sesion-01.md) | Entregada |
-| 02 | Arquitectura CAG: API FastAPI que estima proyectos a partir de la transcripción de una reunión, con ejemplos y tarifas precargados en el contexto | `sesion-02` | — | — | [sesion-02.md](docs/sesiones/sesion-02.md) | En curso |
+| 02 | Arquitectura CAG: API FastAPI que estima proyectos a partir de la transcripción de una reunión, con ejemplos y tarifas precargados en el contexto | `sesion-02` | [#4](https://github.com/Julian-Castineira/lidr-ai-engineering/pull/4) | [`entrega-sesion-02`](https://github.com/Julian-Castineira/lidr-ai-engineering/tree/entrega-sesion-02) | [sesion-02.md](docs/sesiones/sesion-02.md) | Entregada |
 
 ## Cómo ejecutar
 
