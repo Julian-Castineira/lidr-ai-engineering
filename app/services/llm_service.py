@@ -18,6 +18,13 @@ from app.services.schemas import ErrorType, QueryError, QueryResult
 
 logger = logging.getLogger(__name__)
 
+# Tipo del cliente asíncrono para el resto de capas, que no importan el SDK.
+AsyncLLMClient = anthropic.AsyncAnthropic
+
+
+def _api_key(settings: Settings) -> str | None:
+    return settings.anthropic_api_key.get_secret_value() if settings.anthropic_api_key else None
+
 
 def build_client(settings: Settings) -> anthropic.Anthropic:
     """Cliente con timeout y reintentos de la configuración.
@@ -25,9 +32,17 @@ def build_client(settings: Settings) -> anthropic.Anthropic:
     Los reintentos ante errores transitorios (conexión, 408, 409, 429, 5xx) los hace el
     SDK con backoff exponencial; no se añade otra capa de reintentos.
     """
-    api_key = settings.anthropic_api_key.get_secret_value() if settings.anthropic_api_key else None
     return anthropic.Anthropic(
-        api_key=api_key,
+        api_key=_api_key(settings),
+        timeout=settings.timeout_s,
+        max_retries=settings.max_retries,
+    )
+
+
+def build_async_client(settings: Settings) -> anthropic.AsyncAnthropic:
+    """Equivalente asíncrono de `build_client`, con el mismo timeout y reintentos."""
+    return anthropic.AsyncAnthropic(
+        api_key=_api_key(settings),
         timeout=settings.timeout_s,
         max_retries=settings.max_retries,
     )
@@ -56,14 +71,110 @@ def call_raw(
     """
     settings = settings or get_settings()
     if settings.anthropic_api_key is None:
-        return QueryError(
-            error="Falta la variable ANTHROPIC_API_KEY (configúrala en .env).",
-            error_type="configuration",
-        )
+        return _missing_key_error()
+    request = _build_request(
+        messages,
+        model=model,
+        system=system,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+        effort=effort,
+        stop_sequences=stop_sequences,
+        thinking=thinking,
+        api_version=api_version,
+        settings=settings,
+    )
 
-    requested_model = model or settings.model
+    client = client or build_client(settings)
+    start = time.perf_counter()
+    try:
+        response = client.messages.create(**request)
+    except anthropic.AnthropicError as exc:
+        return _failed_call(exc, request["model"])
+    latency_ms = (time.perf_counter() - start) * 1000
+
+    return _to_result(response, request["model"], latency_ms, settings)
+
+
+async def acall_raw(
+    messages: Sequence[MessageParam],
+    *,
+    model: str | None = None,
+    system: str | None = None,
+    max_tokens: int | None = None,
+    temperature: float | None = None,
+    top_p: float | None = None,
+    top_k: int | None = None,
+    effort: Effort | None = None,
+    stop_sequences: list[str] | None = None,
+    thinking: dict[str, Any] | None = None,
+    api_version: str | None = None,
+    client: anthropic.AsyncAnthropic | None = None,
+    settings: Settings | None = None,
+) -> QueryResult | QueryError:
+    """Variante asíncrona de `call_raw`: misma petición, métricas y errores tipados."""
+    settings = settings or get_settings()
+    if settings.anthropic_api_key is None:
+        return _missing_key_error()
+    request = _build_request(
+        messages,
+        model=model,
+        system=system,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+        effort=effort,
+        stop_sequences=stop_sequences,
+        thinking=thinking,
+        api_version=api_version,
+        settings=settings,
+    )
+
+    client = client or build_async_client(settings)
+    start = time.perf_counter()
+    try:
+        response = await client.messages.create(**request)
+    except anthropic.AnthropicError as exc:
+        return _failed_call(exc, request["model"])
+    latency_ms = (time.perf_counter() - start) * 1000
+
+    return _to_result(response, request["model"], latency_ms, settings)
+
+
+def _missing_key_error() -> QueryError:
+    return QueryError(
+        error="Falta la variable ANTHROPIC_API_KEY (configúrala en .env).",
+        error_type="configuration",
+    )
+
+
+def _failed_call(exc: anthropic.AnthropicError, requested_model: str) -> QueryError:
+    error = map_error(exc)
+    logger.warning("Llamada a %s fallida: %s (%s)", requested_model, error.error_type, error.error)
+    return error
+
+
+def _build_request(
+    messages: Sequence[MessageParam],
+    *,
+    model: str | None,
+    system: str | None,
+    max_tokens: int | None,
+    temperature: float | None,
+    top_p: float | None,
+    top_k: int | None,
+    effort: Effort | None,
+    stop_sequences: list[str] | None,
+    thinking: dict[str, Any] | None,
+    api_version: str | None,
+    settings: Settings,
+) -> dict[str, Any]:
+    """Argumentos de `messages.create`, comunes a la variante síncrona y la asíncrona."""
     request: dict[str, Any] = {
-        "model": requested_model,
+        "model": model or settings.model,
         "max_tokens": max_tokens or settings.max_tokens,
         "messages": list(messages),
     }
@@ -88,20 +199,7 @@ def call_raw(
     # Solo si se pide: p. ej. 2023-06-01, la última versión que admite parámetros de muestreo.
     if api_version:
         request["extra_headers"] = {"anthropic-version": api_version}
-
-    client = client or build_client(settings)
-    start = time.perf_counter()
-    try:
-        response = client.messages.create(**request)
-    except anthropic.AnthropicError as exc:
-        error = map_error(exc)
-        logger.warning(
-            "Llamada a %s fallida: %s (%s)", requested_model, error.error_type, error.error
-        )
-        return error
-    latency_ms = (time.perf_counter() - start) * 1000
-
-    return _to_result(response, requested_model, latency_ms, settings)
+    return request
 
 
 def query_claude(
@@ -119,6 +217,32 @@ def query_claude(
     if not message.strip():
         return QueryError(error="El mensaje no puede estar vacío.", error_type="validation")
     return call_raw(
+        [{"role": "user", "content": message}],
+        model=model,
+        system=system_prompt,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        api_version=api_version,
+        client=client,
+        settings=settings,
+    )
+
+
+async def aquery_claude(
+    message: str,
+    system_prompt: str | None = None,
+    model: str | None = None,
+    temperature: float | None = None,
+    *,
+    max_tokens: int | None = None,
+    api_version: str | None = None,
+    client: anthropic.AsyncAnthropic | None = None,
+    settings: Settings | None = None,
+) -> QueryResult | QueryError:
+    """Variante asíncrona de `query_claude`."""
+    if not message.strip():
+        return QueryError(error="El mensaje no puede estar vacío.", error_type="validation")
+    return await acall_raw(
         [{"role": "user", "content": message}],
         model=model,
         system=system_prompt,
@@ -257,6 +381,7 @@ def _to_result(
     return QueryResult(
         content=text,
         model=response.model,
+        provider=settings.provider,
         id=response.id,
         input_tokens=usage.input_tokens,
         output_tokens=usage.output_tokens,

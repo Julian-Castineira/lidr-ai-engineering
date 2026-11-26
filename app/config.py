@@ -1,12 +1,25 @@
 """Configuración de la aplicación, leída de variables de entorno y de `.env`."""
 
+from decimal import Decimal
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
+# Solo Anthropic hasta que la Sesión 3 introduzca la abstracción de proveedores.
+Provider = Literal["anthropic"]
+AppEnv = Literal["development", "test", "production"]
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+HourlyRate = Annotated[Decimal, Field(gt=0)]
+
+DEFAULT_HOURLY_RATES: dict[str, Decimal] = {
+    "desarrollo": Decimal("62.50"),
+    "diseño": Decimal("50.00"),
+    "gestión": Decimal("55.00"),
+    "QA": Decimal("45.00"),
+}
 
 
 class Settings(BaseSettings):
@@ -35,6 +48,21 @@ class Settings(BaseSettings):
     legacy_api_version: str = "2023-06-01"
     # Override opcional de la tabla de precios (JSON con la misma forma que pricing.PRICING).
     pricing_json: str | None = None
+    # Alias explícito para que el error de validación nombre LLM_PROVIDER y no el campo.
+    provider: Provider = Field(default="anthropic", validation_alias="LLM_PROVIDER")
+
+    # Variables de la aplicación: se leen sin el prefijo LLM_.
+    app_env: AppEnv = Field(default="development", validation_alias="APP_ENV")
+    log_level: LogLevel = Field(default="INFO", validation_alias="LOG_LEVEL")
+    # Tarifas en EUR/h por rol para el contexto del estimador (JSON en el entorno).
+    estimation_hourly_rates: dict[str, HourlyRate] = Field(
+        default_factory=lambda: dict(DEFAULT_HOURLY_RATES),
+        min_length=1,
+        validation_alias="ESTIMATION_HOURLY_RATES",
+    )
+    estimation_max_transcription_chars: int = Field(
+        default=60_000, ge=50, validation_alias="ESTIMATION_MAX_TRANSCRIPTION_CHARS"
+    )
 
 
 @lru_cache

@@ -8,10 +8,10 @@ Repositorio **público** de entregas del Máster AI Engineering de LIDR. Es **un
 
 ## Estructura
 
-- La aplicación vive en una sola estructura evolutiva, no en carpetas por sesión: paquete `app/` en la raíz (`app/config.py` y la lógica en `app/services/`; `llm_service.py` es el único módulo que importa el SDK de Anthropic), scripts de experimentación en `experiments/` y tests en `tests/unit` (sin red) y `tests/live` (API real, opt-in).
+- La aplicación vive en una sola estructura evolutiva, no en carpetas por sesión: paquete `app/` en la raíz con `main.py` (FastAPI, `lifespan` y `/health`), `config.py`, `routers/` (endpoints finos bajo `/api/v1`), `schemas/` (contratos HTTP), `context/` (conocimiento precargado, CAG), `prompts/` (prompts versionados `nombre.vN.md`) y la lógica en `services/` (`llm_service.py` es el único módulo de `app/` que importa el SDK de Anthropic). Scripts de experimentación en `experiments/` y tests en `tests/unit` (sin red) y `tests/live` (API real, opt-in).
 - `docs/sesiones/sesion-NN.md`: memoria de cada entrega (enunciado resumido, qué se hizo, decisiones y cómo probarlo). Es lo primero que lee el profesor.
 - `ejercicios/sesion-NN/`: solo para ejercicios independientes que no formen parte de la aplicación.
-- Stack: Python 3.11+ con uv. Comandos: `uv sync`, `uv run pytest` (excluye los tests `live`), `uv run pytest -m live` (con coste), `uv run ruff check .`, `uv run ruff format --check .` y `uv run mypy app experiments`.
+- Stack: Python 3.11+ con uv. Comandos: `uv sync`, `uv run pytest` (excluye los tests `live`), `uv run pytest -m live` (con coste), `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy app experiments` y `uv run uvicorn app.main:app --reload` (servicio, documentación en `/docs`).
 
 ## Flujo de entrega por sesión
 

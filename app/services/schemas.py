@@ -29,6 +29,7 @@ class QueryResult(BaseModel):
 
     content: str
     model: str  # modelo exacto que sirvió la respuesta
+    provider: str = "anthropic"
     id: str
     input_tokens: int
     output_tokens: int

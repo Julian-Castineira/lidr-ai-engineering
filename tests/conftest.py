@@ -1,5 +1,6 @@
 """Dobles de prueba del SDK de Anthropic: sin red, sin API key real y sin coste."""
 
+import asyncio
 from collections.abc import Callable
 from typing import Any
 
@@ -108,6 +109,37 @@ class FakeClient:
     @property
     def calls(self) -> list[dict[str, Any]]:
         return self.messages.calls
+
+
+class FakeAsyncMessages(FakeMessages):
+    def __init__(self, responses: list[Message | Exception], delay_s: float) -> None:
+        super().__init__(responses)
+        self._delay_s = delay_s
+
+    async def create(self, **kwargs: Any) -> Message:  # type: ignore[override]
+        if self._delay_s:
+            await asyncio.sleep(self._delay_s)
+        return super().create(**kwargs)
+
+
+class FakeAsyncClient:
+    """Sustituto de `anthropic.AsyncAnthropic`; `delay_s` simula la latencia del proveedor."""
+
+    def __init__(self, *responses: Message | Exception, delay_s: float = 0.0) -> None:
+        self.messages = FakeAsyncMessages(list(responses), delay_s)
+        self.closed = False
+
+    @property
+    def calls(self) -> list[dict[str, Any]]:
+        return self.messages.calls
+
+    async def close(self) -> None:
+        self.closed = True
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"
 
 
 @pytest.fixture
