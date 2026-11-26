@@ -48,7 +48,8 @@ class Settings(BaseSettings):
     legacy_api_version: str = "2023-06-01"
     # Override opcional de la tabla de precios (JSON con la misma forma que pricing.PRICING).
     pricing_json: str | None = None
-    provider: Provider = "anthropic"
+    # Alias explícito para que el error de validación nombre LLM_PROVIDER y no el campo.
+    provider: Provider = Field(default="anthropic", validation_alias="LLM_PROVIDER")
 
     # Variables de la aplicación: se leen sin el prefijo LLM_.
     app_env: AppEnv = Field(default="development", validation_alias="APP_ENV")

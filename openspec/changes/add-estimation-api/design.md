@@ -66,7 +66,7 @@ app/services/llm_service.py        # + acall_raw / aquery_claude
 - `LOG_LEVEL` pasa de `DEBUG` (enunciado) a `INFO` por defecto, para que una ejecución normal no saque los registros de depuración del SDK. Se puede cambiar en `.env`.
 - **Por qué una sola clase**: es la única fuente de configuración, con un solo `get_settings()` cacheado, y los tests existentes no cambian.
 - **Alternativa descartada**: `AppSettings` aparte. Habría dos `.env` loaders y dos cachés que mantener sincronizados.
-- **Fallo rápido**: el `lifespan` llama a `get_settings()`, cuyos errores de validación ya nombran la variable. Si `anthropic_api_key` es `None`, lanza un `RuntimeError` que menciona `ANTHROPIC_API_KEY` y no deja arrancar a uvicorn. La configuración sigue sin exigir la clave al importarse, porque los experimentos y los tests de la Sesión 1 dependen de ello.
+- **Fallo rápido**: el `lifespan` llama a `get_settings()`, cuyos errores de validación nombran la variable de entorno. Para eso, todos los campos nuevos, incluido `provider`, tienen `validation_alias`. Si `anthropic_api_key` es `None`, lanza un `RuntimeError` que menciona `ANTHROPIC_API_KEY` y no deja arrancar a uvicorn. También llama a `load_examples` con las tarifas: si algún rol de los ejemplos no tiene tarifa, el servicio no arranca, en lugar de responder 500 a cada petición. La configuración sigue sin exigir la clave al importarse, porque los experimentos y los tests de la Sesión 1 dependen de ello.
 
 ### D4. Contexto CAG y ejemplos
 - `EstimationExample` (Pydantic, `frozen`) contiene `title`, `meeting_summary`, `tasks: list[ExampleTask(name, role, hours: Decimal > 0)]`, `team: list[str]` y `duration_weeks > 0`.
@@ -93,7 +93,7 @@ app/services/llm_service.py        # + acall_raw / aquery_claude
 ### D6. Servicio de estimación y contrato HTTP
 - `estimate(transcription, *, client, settings) -> EstimationOutcome | QueryError` construye el prompt, llama a `aquery_claude` y genera el registro de observabilidad (D8).
 - Schemas:
-  - `EstimationRequest`, con `extra="forbid"` y `transcription: str` con `str_strip_whitespace`. Un validador comprueba que tenga al menos 50 caracteres y como máximo el límite de la configuración, de modo que el límite no queda fijado en el esquema.
+  - `EstimationRequest`, con `extra="forbid"` y `transcription: str` con `str_strip_whitespace`. El mínimo de 50 caracteres está en el esquema. El máximo lo comprueba el router con la configuración inyectada por `Depends`, para que respete los overrides y los tests no dependan del entorno. Ante un exceso, lanza un `RequestValidationError` con el mismo formato 422 de FastAPI y sin devolver la transcripción en el error.
   - `EstimationResponse`, con los campos de la spec. `usage` es un `TokenUsage` anidado, como en el repositorio de referencia, y `total_tokens` se calcula.
 - `finish_reason` se normaliza: `end_turn` y `stop_sequence` pasan a `stop`, `max_tokens` a `length` y el resto a `other`. Se hace ya porque es el nombre que perdurará cuando haya varios proveedores, y así ese cambio de la Sesión 3 no rompe el contrato.
 - **Traducción de errores**: una tabla en el router de `error_type` a código HTTP, que lanza un `HTTPException` con detalle `{"error_type", "message"}`:

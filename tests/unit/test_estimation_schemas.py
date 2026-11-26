@@ -1,21 +1,13 @@
 """Contratos HTTP del estimador: validación de la petición y forma de la respuesta."""
 
-from collections.abc import Iterator
 from datetime import UTC
 
 import pytest
 from pydantic import ValidationError
 
-from app.config import get_settings
 from app.schemas.estimation import EstimationRequest, EstimationResponse, TokenUsage
 
-
-@pytest.fixture(autouse=True)
-def fresh_settings(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    monkeypatch.setenv("ESTIMATION_MAX_TRANSCRIPTION_CHARS", "200")
-    get_settings.cache_clear()
-    yield
-    get_settings.cache_clear()
+# El máximo de longitud depende de la configuración y se prueba en el endpoint.
 
 
 def test_valid_request_is_stripped() -> None:
@@ -28,13 +20,6 @@ def test_valid_request_is_stripped() -> None:
 def test_too_short_transcription(transcription: str) -> None:
     with pytest.raises(ValidationError, match="transcription"):
         EstimationRequest(transcription=transcription)
-
-
-def test_max_length_comes_from_settings() -> None:
-    EstimationRequest(transcription="a" * 200)
-
-    with pytest.raises(ValidationError, match="200"):
-        EstimationRequest(transcription="a" * 201)
 
 
 def test_unknown_fields_are_rejected() -> None:

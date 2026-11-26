@@ -78,7 +78,17 @@ def test_startup_fails_with_invalid_configuration(
     monkeypatch.setenv("LLM_PROVIDER", "openai")
     use_settings(lambda: make_settings(ANTHROPIC_API_KEY=FAKE_KEY))
 
-    with pytest.raises(ValidationError, match="provider"), TestClient(app):
+    with pytest.raises(ValidationError, match="LLM_PROVIDER"), TestClient(app):
+        pass
+
+
+def test_startup_fails_when_an_example_role_has_no_rate(
+    use_settings: Callable[[Callable[[], Settings]], None], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("ESTIMATION_HOURLY_RATES", '{"desarrollo": 60}')
+    use_settings(lambda: make_settings(ANTHROPIC_API_KEY=FAKE_KEY))
+
+    with pytest.raises(ValueError, match="diseño"), TestClient(app):
         pass
 
 

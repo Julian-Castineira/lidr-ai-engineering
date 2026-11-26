@@ -139,6 +139,37 @@ def test_invalid_requests_do_not_call_the_llm(settings: Settings, body: dict[str
     assert fake.calls == []
 
 
+def test_max_length_comes_from_injected_settings(settings: Settings) -> None:
+    limited = settings.model_copy(update={"estimation_max_transcription_chars": 200})
+    fake = FakeAsyncClient(make_message(ESTIMATION))
+    client = build_client(limited, fake)
+
+    too_long = client.post("/api/v1/estimate", json={"transcription": "a" * 201})
+    at_limit = client.post("/api/v1/estimate", json={"transcription": "a" * 200})
+
+    assert too_long.status_code == 422
+    error = too_long.json()["detail"][0]
+    assert error["loc"] == ["body", "transcription"]
+    assert "200" in error["msg"]
+    # La respuesta de error no devuelve la transcripción.
+    assert "a" * 201 not in too_long.text
+    assert at_limit.status_code == 200
+    assert len(fake.calls) == 1
+
+
+def test_invalid_utf8_body_is_400(settings: Settings) -> None:
+    fake = FakeAsyncClient()
+
+    response = build_client(settings, fake).post(
+        "/api/v1/estimate",
+        content=b'{"transcription": "\xe9\xe9"}',
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 400
+    assert fake.calls == []
+
+
 def test_non_json_body_is_rejected(settings: Settings) -> None:
     fake = FakeAsyncClient()
 
@@ -162,6 +193,7 @@ def test_non_json_body_is_rejected(settings: Settings) -> None:
         (make_status_error(529, "overloaded"), 502, "server"),
         (make_timeout_error(), 504, "timeout"),
         (make_connection_error(), 502, "connection"),
+        (make_status_error(418, "I'm a teapot"), 502, "api"),
     ],
 )
 def test_provider_errors_are_translated(

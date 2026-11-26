@@ -31,8 +31,12 @@ El servicio MUST rechazar con 422, sin consultar al LLM, un cuerpo sin `transcri
 - **THEN** la respuesta es 422 y no se realiza ninguna llamada al LLM
 
 #### Scenario: Cuerpo inválido
-- **WHEN** se envía un cuerpo sin `transcription`, con un campo adicional o que no es JSON
+- **WHEN** se envía un cuerpo sin `transcription`, con un campo adicional o con JSON mal formado
 - **THEN** la respuesta es 422 y no se realiza ninguna llamada al LLM
+
+#### Scenario: Cuerpo con codificación inválida
+- **WHEN** se envía un cuerpo que no es UTF-8 válido
+- **THEN** la respuesta es 400 y no se realiza ninguna llamada al LLM
 
 ### Requirement: Contrato de la respuesta de estimación
 La respuesta 200 SHALL contener `estimation`, `model` (el modelo exacto que sirvió la respuesta), `provider`, `usage` con `input_tokens`, `output_tokens` y `total_tokens`, `finish_reason`, `latency_ms`, `cost_usd` (nulo si el modelo no tiene precio configurado) y `created_at` en ISO 8601 con zona horaria UTC.

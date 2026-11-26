@@ -1,5 +1,7 @@
 """Estimación real de extremo a extremo (con coste). Solo se ejecuta con `pytest -m live`."""
 
+import re
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -33,9 +35,11 @@ def test_real_estimation_end_to_end() -> None:
 
     assert response.status_code == 200, response.text
     body = response.json()
-    assert "| Tarea | Rol | Horas | Coste (EUR) |" in body["estimation"]
-    assert "Total de horas" in body["estimation"]
-    assert "Coste total" in body["estimation"]
+    estimation = body["estimation"]
+    # Tolerante a espacios: lo que se exige es la estructura, no el espaciado exacto.
+    assert re.search(r"\|\s*Tarea\s*\|\s*Rol\s*\|\s*Horas\s*\|\s*Coste \(EUR\)\s*\|", estimation)
+    for section in ("Total de horas", "Coste total", "Equipo recomendado", "Duración"):
+        assert section in estimation
     assert body["provider"] == "anthropic"
     assert body["usage"]["input_tokens"] > 0
     assert body["usage"]["output_tokens"] > 0

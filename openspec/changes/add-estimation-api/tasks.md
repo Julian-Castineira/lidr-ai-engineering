@@ -96,7 +96,7 @@
   - Anotar en la memoria la latencia y el coste observados.
 
   Si no se autoriza, dejarlo anotado como no verificado.
-- [ ] 7.3 Ejecutar `openspec-verify-change` sobre `add-estimation-api` y resolver o justificar todos sus hallazgos
+- [x] 7.3 Ejecutar `openspec-verify-change` sobre `add-estimation-api` y resolver o justificar todos sus hallazgos
 
 ## Workflow follow-up
 

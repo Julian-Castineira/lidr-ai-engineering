@@ -27,7 +27,7 @@ El servicio se integra en el paquete `app/` de la Sesión 01: la estructura crec
 | Servicio | `app/services/estimation_service.py` | Construye el prompt de forma determinista (número de ejemplos ajustable), llama al LLM y registra modelo, tokens, latencia, coste, `finish_reason` y versión del prompt. Nunca registra la transcripción ni la estimación. |
 | Cliente LLM | `app/services/llm_service.py` | Nuevas `acall_raw` y `aquery_claude`, con el mismo contrato que las síncronas de la Sesión 01 y la construcción de la petición compartida. Sigue siendo el único módulo de la aplicación que importa el SDK. |
 | Configuración | `app/config.py`, `.env.example` | `LLM_PROVIDER` (solo `anthropic`), `APP_ENV`, `LOG_LEVEL`, `ESTIMATION_HOURLY_RATES` y `ESTIMATION_MAX_TRANSCRIPTION_CHARS`. |
-| Tests | `tests/unit`, `tests/live` | 182 tests sin red (87 nuevos): configuración, consulta asíncrona, ejemplos, prompt, schemas, endpoint, aplicación y registro. Además, un test `live` de la estimación de extremo a extremo. |
+| Tests | `tests/unit`, `tests/live` | 185 tests sin red (90 nuevos): configuración, consulta asíncrona, ejemplos, prompt, schemas, endpoint, aplicación y registro. Además, un test `live` de la estimación de extremo a extremo. |
 
 El diseño se especificó antes con OpenSpec: `openspec/changes/add-estimation-api/` (propuesta, specs `estimation-api`, `estimation-context` y delta de `llm-client`, diseño y tareas).
 
@@ -91,7 +91,7 @@ Pruebas con la API real (con coste): `uv run pytest -m live`.
 
 ## Verificación
 
-- **Sin red**: 182 tests unitarios en verde, sin regresiones en los de la Sesión 01. `ruff check`, `ruff format --check` y `mypy --strict` sin errores.
+- **Sin red**: 185 tests unitarios en verde, sin regresiones en los de la Sesión 01. `ruff check`, `ruff format --check` y `mypy --strict` sin errores.
 - **Servicio levantado con una clave falsa** (sin coste):
   - Sin clave, el arranque falla nombrando `ANTHROPIC_API_KEY`.
   - `/health` devuelve 200 con `{"status": "healthy", "version": "0.2.0", "environment": "development"}`.
@@ -106,6 +106,12 @@ Pruebas con la API real (con coste): `uv run pytest -m live`.
     - Coste: 0,0011 USD. `finish_reason`: `stop`.
     - El registro muestra las métricas sin la transcripción.
   - Coste total de la verificación real: unos 0,003 USD.
+- **Verificación de OpenSpec** (`openspec-verify-change`, hecha por un revisor independiente): ningún hallazgo crítico. Se corrigieron sus tres avisos:
+  - El error por `LLM_PROVIDER` inválido no nombraba la variable.
+  - El máximo de longitud ignoraba la configuración inyectada.
+  - Si faltaba la tarifa de un rol, el servicio arrancaba igual y cada petición daba 500. Ahora no arranca.
+
+  Además, la spec precisa que un cuerpo con UTF-8 inválido devuelve 400.
 
 ### Extracto de la estimación real
 

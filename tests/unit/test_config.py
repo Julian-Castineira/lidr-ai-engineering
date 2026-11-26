@@ -177,5 +177,5 @@ def test_invalid_app_values_name_the_variable(
     with pytest.raises(ValidationError) as exc_info:
         make_settings()
 
-    message = str(exc_info.value)
-    assert variable in message or variable.removeprefix("LLM_").lower() in message
+    # El error nombra la variable de entorno tal como se escribe en .env.
+    assert variable in str(exc_info.value)

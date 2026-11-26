@@ -3,6 +3,7 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 
 from app.config import Settings, get_settings
 from app.schemas.estimation import (
@@ -67,6 +68,22 @@ def get_llm_client(request: Request) -> AsyncLLMClient:
     return client
 
 
+def _check_max_length(transcription: str, settings: Settings) -> None:
+    """422 con el mismo formato que la validación de FastAPI, sin devolver la entrada."""
+    limit = settings.estimation_max_transcription_chars
+    if len(transcription) > limit:
+        raise RequestValidationError(
+            [
+                {
+                    "type": "string_too_long",
+                    "loc": ("body", "transcription"),
+                    "msg": f"La transcripción supera el máximo de {limit} caracteres.",
+                    "ctx": {"max_length": limit},
+                }
+            ]
+        )
+
+
 def _http_error(error: QueryError) -> HTTPException:
     detail = ErrorDetail(error_type=error.error_type, message=ERROR_MESSAGES[error.error_type])
     return HTTPException(
@@ -85,6 +102,7 @@ async def create_estimation(
     client: Annotated[AsyncLLMClient, Depends(get_llm_client)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> EstimationResponse:
+    _check_max_length(body.transcription, settings)
     outcome = await estimate(body.transcription, client=client, settings=settings)
     if isinstance(outcome, QueryError):
         raise _http_error(outcome)

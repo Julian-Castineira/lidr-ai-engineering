@@ -3,9 +3,8 @@
 from datetime import UTC, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
-from app.config import get_settings
 from app.services.schemas import ErrorType
 
 MIN_TRANSCRIPTION_CHARS = 50
@@ -29,19 +28,15 @@ class EstimationRequest(BaseModel):
         },
     )
 
+    # El máximo es configurable (ESTIMATION_MAX_TRANSCRIPTION_CHARS) y lo comprueba el
+    # router con la configuración inyectada, no un literal del esquema.
     transcription: str = Field(
         min_length=MIN_TRANSCRIPTION_CHARS,
-        description="Transcripción de la reunión con el cliente (texto plano).",
+        description=(
+            "Transcripción de la reunión con el cliente (texto plano). Máximo configurable "
+            "con ESTIMATION_MAX_TRANSCRIPTION_CHARS (60.000 caracteres por defecto)."
+        ),
     )
-
-    @field_validator("transcription")
-    @classmethod
-    def _max_length(cls, value: str) -> str:
-        # El máximo es configurable (ESTIMATION_MAX_TRANSCRIPTION_CHARS), no un literal.
-        limit = get_settings().estimation_max_transcription_chars
-        if len(value) > limit:
-            raise ValueError(f"la transcripción supera el máximo de {limit} caracteres")
-        return value
 
 
 class TokenUsage(BaseModel):
